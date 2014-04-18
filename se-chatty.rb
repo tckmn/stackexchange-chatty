@@ -27,11 +27,7 @@ class SEChatty
 		@previous_message = ''
 	end
 
-	def send_message room_number, message = nil
-		if !message
-			message = room_number
-			room_number = @default_room_number
-		end
+	def send_message message, room_number = @default_room_number
 		message += '.' if message == @previous_message
 		loop {
 			success = false
@@ -92,7 +88,7 @@ end
 
 # for this example, I'm using http://chat.stackexchange.com/rooms/13972/bot-testing-room
 sec = SEChatty.new 'stackexchange.com', 'INSERT EMAIL HERE', 'INSERT PASSWORD HERE', 13972
-sec.send_message 13972, 'Bot initialized'
+sec.send_message 'Bot initialized'
 sec.get_messages {|event|
 	JSON.parse(event.data).each do |room, data|
 		room_number = room.match(/\d+/)[0]
@@ -102,13 +98,13 @@ sec.get_messages {|event|
 				next if e['user_id'] == 110309 # my chatbot's id
 				case e['event_type']
 				when SEChatty::Event::MessagePosted, SEChatty::Event::MessageEdited
-					sec.send_message ":#{e['message_id']} Hello! That message was #{e['content']} and your username is #{e['user_name']}." if e['content'] =~ /hello/i
+					sec.send_message ":#{e['message_id']} Hello! That message was \"#{e['content']}\" and your username is #{e['user_name']}." if e['content'] =~ /hello/i
 				when SEChatty::Event::UserEntered
 					sec.send_message "Hi #{e['user_name']}!"
 				when SEChatty::Event::UserLeft
 					sec.send_message "Bye #{e['user_name']}!"
 				when SEChatty::Event::RoomNameChanged
-					sec.send_message "I #{e['content'].sum % 2 == 0 ? "don't" : ''}like that new name."
+					sec.send_message "I #{e['content'].sum % 2 == 0 ? "don't " : ''}like that new name and description."
 				when SEChatty::Event::MessageStarred
 					sec.send_message "#{e['user_name']} starred that."
 				when SEChatty::Event::MessageDeleted
@@ -118,3 +114,4 @@ sec.get_messages {|event|
 		end
 	end
 }
+at_exit { sec.send_message "I've been killed!" }
