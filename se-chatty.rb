@@ -157,5 +157,6 @@ sec.get_messages {|event|
 }
 Signal.trap('SIGINT') {
     #sec.send_message 'Bot killed manually'
+    exit
 }
 sleep
