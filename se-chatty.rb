@@ -1,3 +1,5 @@
+#!/usr/bin/ruby
+
 require 'mechanize'
 require 'faye/websocket'
 require 'eventmachine'
@@ -120,7 +122,7 @@ cmds = {
     }
 }
 unknown_cmd = ->cmdname, a{
-    sec.send_message "Unknown command #{cmdname}."
+    sec.send_message "Unknown command `#{cmdname}`."
 }
 sec.get_messages {|event|
     JSON.parse(event.data).each do |room, data|
