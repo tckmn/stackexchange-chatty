@@ -1,0 +1,7 @@
+# Vim
+.*.sw?
+
+# se-chatty
+email.txt
+password.txt
+userid.txt
