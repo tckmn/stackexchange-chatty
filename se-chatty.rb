@@ -65,6 +65,14 @@ class SEChatty
         @rate_limit_count += 1
     end
 
+    def reply e, message
+        if message =~ /^[^ ]/
+            self.send_message ":#{e['message_id']} #{message}", e['room_id']
+        else
+            self.send_message message, e['room_id']
+        end
+    end
+
     def get_messages room_number = @default_room_number
         ws_url = JSON.parse(@agent.post("http://chat.#{@sitename}/ws-auth", [['roomid', room_number], ['fkey', @fkey]]).body)['url']
         ws_url += '?l=' + JSON.parse(@agent.post("http://chat.#{@sitename}/chats/#{room_number}/events", [['fkey', @fkey]]).body)['time'].to_s
